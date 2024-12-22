@@ -80,3 +80,14 @@ update netflix set duration = rating where rating like "%min";
 update netflix set rating = null where show_id IN ('s5542', 's5795', 's5814');
 
 
+-- Handling missing.
+update netflix as n
+join 
+(select d.director, n.country from movie_director d 
+join netflix n on n.show_id = d.show_id  
+where d.director is not null and country is not null 
+group by d.director, n.country) as tb
+on n.director = tb.director
+set n.country = tb.country
+where n.country is null;
+
